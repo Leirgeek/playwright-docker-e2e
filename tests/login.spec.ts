@@ -1,18 +1,20 @@
-import {test, expect} from '@playwright/test';
+import { test } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPagePage';
+import { DashboardPage } from '../pages/DashboardPage';
 
-test('login test', async ({page}) => {
-  await page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
-    await page.locator('input.oxd-input.oxd-input--active').first().click();
-    await page.locator('input.oxd-input.oxd-input--active').fill('Admin');
-    await page.getByPlaceholder ('Password').click();
-    await page.getByPlaceholder('Password').fill('admin123');
-    await page.getByRole('button', {name: 'Login'}).click();
-    await expect(page).toHaveURL('https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index');
-    await expect(page.getByText('Time at Work')).toBeVisible();
+test.describe('Login Functionality', () => {
+  let loginPage: LoginPage;
+  let dashboardPage: DashboardPage;
 
-    //access the logout button and click it
-    await page.locator('p.oxd-userdropdown-name').click();
-    await page.getByText('Logout').click();
-    //await page.getByRole('link', {name: 'Logout'}).click();
-    await expect(page).toHaveURL('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
-})
+  // Before each test, initialize page objects and navigate to login page
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    dashboardPage = new DashboardPage(page);
+    await loginPage.goto();
+  });
+
+  test('should login and logout successfully', async () => {
+    await loginPage.login('Admin', 'admin123');
+    await dashboardPage.logout();
+  });
+});
