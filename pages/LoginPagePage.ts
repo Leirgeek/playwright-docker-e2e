@@ -1,33 +1,33 @@
-import {Page, expect} from '@playwright/test';
-//export class LoginPage
-export class LoginPage {
-    //Define selectors
-    readonly page: Page;
-    readonly usernameInput;
-    readonly passwordInput;
-    readonly loginButton;
+// pages/LoginPage.ts
+import { Page } from '@playwright/test';
+import { TestData } from '../utils/TestData'; 
 
-    constructor(page){
-        this.page = page; // Initialize the page object
-        this.usernameInput = page.locator('input.oxd-input,oxd-input--active').first();
-        this.passwordInput = page.locator('input.oxd-input,oxd-input--active').nth(1);
-        this.loginButton = page.getByRole('button', {name: 'Login'});
-    }
-    async goto(){ // Navigate to the login page
-        await this.page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
-    }
-    // Method to perform login  action
-    async login(username : string, password: string){
-        await this.usernameInput.click();
-        await this.usernameInput.fill(username);
-        await this.passwordInput.click();
-        await this.passwordInput.fill(password);
-        await this.loginButton.click();
+export class LoginPage {// Define selectors
+  readonly page: Page;
+  readonly usernameField;
+  readonly passwordField;
+  readonly loginButton;
 
-        // Verify successful login by checking the URL and presence of 'Time at Work' text
-        await expect(this.page).toHaveURL('https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index');
-        await expect(this.page.getByText('Time at Work')).toBeVisible();
-    }
+  constructor(page: Page) {// Constructor to initialize the page object and selectors
+    this.page = page;
+    this.usernameField = page.locator('input.oxd-input.oxd-input--active').first();
+    this.passwordField = page.getByPlaceholder('Password');
+    this.loginButton = page.getByRole('button', { name: 'Login' });
+  }
 
+  async goto() {// Navigate to the login page
+    await this.page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
+  }
 
+  async loginWithValidUser() {// Login using valid user credentials from TestData
+    await this.usernameField.fill(TestData.validUser.username);
+    await this.passwordField.fill(TestData.validUser.password);
+    await this.loginButton.click();
+  }
+
+  async login(username: string, password: string) {// Generic login method
+    await this.usernameField.fill(username);
+    await this.passwordField.fill(password);
+    await this.loginButton.click();
+  }
 }

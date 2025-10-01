@@ -1,20 +1,25 @@
-import { test } from '@playwright/test';
+// tests/login.spec.ts
+import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPagePage';
 import { DashboardPage } from '../pages/DashboardPage';
+import { TestData } from '../utils/TestData';  
 
 test.describe('Login Functionality', () => {
-  let loginPage: LoginPage;
-  let dashboardPage: DashboardPage;
+  test('should login and logout successfully', async ({ page }) => {
+    const loginPage = new LoginPage(page);
+    const dashboardPage = new DashboardPage(page);
 
-  // Before each test, initialize page objects and navigate to login page
-  test.beforeEach(async ({ page }) => {
-    loginPage = new LoginPage(page);
-    dashboardPage = new DashboardPage(page);
     await loginPage.goto();
-  });
+    await loginPage.loginWithValidUser();
 
-  test('should login and logout successfully', async () => {
-    await loginPage.login('Admin', 'admin123');
+    // Assertions after login
+    await expect(page).toHaveURL('https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index');
+    await expect(page.getByText('Time at Work')).toBeVisible();
+
+    // Perform logout
     await dashboardPage.logout();
+
+    // Assertion after logout
+    await expect(page).toHaveURL(/auth\/login/);
   });
 });
