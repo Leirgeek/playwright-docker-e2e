@@ -10,7 +10,7 @@ export class LoginPage {// Define selectors
 
   constructor(page: Page) {// Constructor to initialize the page object and selectors
     this.page = page;
-    this.usernameField = page.locator('input.oxd-input.oxd-input--active').first();
+    this.usernameField = page.locator('[name ="username"]');
     this.passwordField = page.getByPlaceholder('Password');
     this.loginButton = page.getByRole('button', { name: 'Login' });
   }
@@ -23,6 +23,13 @@ export class LoginPage {// Define selectors
     await this.usernameField.fill(TestData.validUser.username);
     await this.passwordField.fill(TestData.validUser.password);
     await this.loginButton.click();
+  }
+
+  async loginWithInvalidUser() {// login with invalid user credentials
+    await this.usernameField.fill(TestData.invalidUser.username);
+    await this.passwordField.fill(TestData.invalidUser.password);
+    await this.loginButton.click();
+
   }
 
   async login(username: string, password: string) {// Generic login method
